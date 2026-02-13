@@ -56,7 +56,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     const name = req.session.authorization.username;
     let reviews = books[isbn].reviews;
 
-    reviews.name = req.body.review;
+    reviews.name = req.query.review;
     return res.status(200).json({ message: "Your review has been successfully submitted." });
 
 });
