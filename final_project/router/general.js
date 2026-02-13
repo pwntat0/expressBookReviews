@@ -90,17 +90,29 @@ public_users.get('/author/:author',function (req, res) {
         });
 });
 
+function getBookFromTitle(title) {
+    return new Promise((resolve, reject) => {
+        let book_array = Object.entries(books);
+        let filtered_books = book_array.filter((book) => book[1].title === title);
+        let book_object = Object.fromEntries(filtered_books);
+        if (Object.keys(book_object).length !== 0) {
+            resolve(book_object);
+        } else {
+            reject("There is no book with this title on record.");
+        }
+    });
+}
+
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     const title = req.params.title;
-    let book_array = Object.entries(books);
-    let filtered_books = book_array.filter((book) => book[1].title === title);
-    let book_object = Object.fromEntries(filtered_books);
-    if (Object.keys(book_object).length !== 0) {
-        res.send(book_object);
-    } else {
-        return res.status(404).json({message: `There are no books under the title: ${title}.`});
-    }
+    getBookFromTitle(title)
+        .then(book => {
+            res.send(JSON.stringify(book,null,4));
+        })
+        .catch(error => {
+            res.status(404).json({message: error});
+        });
 });
 
 //  Get book review
