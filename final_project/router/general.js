@@ -43,14 +43,26 @@ public_users.get('/',function (req, res) {
     
 });
 
+function getSpecificBook(isbn) {
+    return new Promise((resolve, reject) => {
+        if (isbn > Object.keys(books).length) {
+            reject("This book does not exist.");
+        } else {
+            resolve(books[isbn]);
+        }
+    });
+}
+
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    if (books[isbn]) {
-        res.send(books[isbn]);
-    } else {
-        return res.status(404).json({message: `The book with ISBN: ${isbn} does not exist.`});
-    }
+    getSpecificBook(isbn)
+        .then(book => {
+            res.send(JSON.stringify(book,null,4));
+        })
+        .catch(error => {
+            res.status(404).json({message: error});
+        });
 });
     
 // Get book details based on author
